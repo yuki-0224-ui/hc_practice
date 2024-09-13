@@ -43,10 +43,16 @@ ul {
   margin: 10px 0;
 }
 
-.header__menu {
+.header__nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header__menu {
+  display: flex;
+  align-items: center;
+  gap: 0 38px;
 }
 
 .header__menu-item {
@@ -156,10 +162,6 @@ ul {
 
 /*PCサイズの設定*/
 @media screen and (min-width: 600px) {
-  .header__menu {
-    justify-content: flex-end;
-  }
-
   .header__menu-item {
     max-width: 400px;
     font-size: 1.1rem;
@@ -168,11 +170,6 @@ ul {
 
   .header__menu-resume {
     font-size: 1.5rem;
-    margin-right: auto;
-  }
-
-  .header__menu-introduction {
-    margin-right: 30px;
   }
 
   .main__introduction {
