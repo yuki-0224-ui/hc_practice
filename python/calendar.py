@@ -40,10 +40,9 @@ class Calendar:
             first_week.append(day_str)
             current_day += timedelta(days=1)
 
-        if current_day.weekday() == SUNDAY:
-            day_str = self.format_day(current_day, today)
-            first_week.append(day_str)
-            current_day += timedelta(days=1)
+        day_str = self.format_day(current_day, today)
+        first_week.append(day_str)
+        current_day += timedelta(days=1)
         return first_week, current_day
 
     def generate_week(self, current_day, last_day, today):
