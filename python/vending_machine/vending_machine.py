@@ -1,11 +1,17 @@
+from juice import Juice
+
+
 class VendingMachine:
     def __init__(self):
-        self.__juice_stock = {"ペプシ": [150, 5]}
+        self.__juice_stock = [{"juice": Juice("ペプシ", 150), "stock": 5}]
         self.__sales_amount = 0
 
     @property
     def juice_stock(self):
-        return [(key, value[1]) for key, value in self.__juice_stock.items()]
+        return [
+            (item["juice"].name, item["juice"].price, item["stock"])
+            for item in self.__juice_stock
+        ]
 
     @property
     def sales_amount(self):
@@ -14,38 +20,44 @@ class VendingMachine:
     @property
     def available_juice(self):
         return [
-            (key, value[0])
-            for key, value in self.__juice_stock.items()
-            if self.__juice_stock[key][1] > 0
+            (item["juice"].name, item["juice"].price)
+            for item in self.__juice_stock
+            if item["stock"] > 0
         ]
 
     def add_juice(self, juice, stock):
         if stock <= 0:
             raise ValueError("在庫数は1以上を指定してください")
-        if juice.name in self.__juice_stock:
-            self.__juice_stock[juice.name][1] += stock
-        else:
-            self.__juice_stock[juice.name] = [juice.price, stock]
+
+        for item in self.__juice_stock:
+            if item["juice"].name == juice.name:
+                item["stock"] += stock
+                return
+
+        self.__juice_stock.append({"juice": juice, "stock": stock})
 
     def buy_with_suica(self, juice_name, suica):
-        if juice_name not in self.__juice_stock:
+        stock_item = self.__find_stock(juice_name)
+        if not stock_item:
             raise ValueError("そのジュースはありません")
 
-        if not self.__has_stock(juice_name):
+        if stock_item["stock"] <= 0:
             raise ValueError("在庫切れです")
 
-        price = self.__juice_stock[juice_name][0]
-
         try:
-            suica.pay(price)
+            suica.pay(stock_item["juice"].price)
             self.__reduce_stock(juice_name)
-            self.__sales_amount += price
+            self.__sales_amount += stock_item["juice"].price
         except ValueError as e:
             raise ValueError(e)
 
-    def __has_stock(self, juice_name):
-        return self.__juice_stock.get(juice_name, [0, 0])[1] > 0
+    def __find_stock(self, name):
+        for item in self.__juice_stock:
+            if item["juice"].name == name:
+                return item
+        return None
 
     def __reduce_stock(self, juice_name):
-        if self.__has_stock(juice_name):
-            self.__juice_stock[juice_name][1] -= 1
+        stock_item = self.__find_stock(juice_name)
+        if stock_item and stock_item["stock"] > 0:
+            stock_item["stock"] -= 1
