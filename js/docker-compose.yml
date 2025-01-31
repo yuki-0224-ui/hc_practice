@@ -1,0 +1,6 @@
+services:
+  calendar:
+    build: .
+    volumes:
+      - .:/app
+    tty: true
